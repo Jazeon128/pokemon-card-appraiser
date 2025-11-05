@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokemon TCG API Test</h1>
+    <p>Click the button to test if the Pokemon TCG API works in your browser:</p>
+
+    <button onclick="testAPI()">Test API</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Testing API...';
+            resultDiv.className = '';
+
+            const apiUrl = 'https://api.pokemontcg.io/v2/cards?q=name:pikachu&pageSize=3';
+
+            console.log('Testing API URL:', apiUrl);
+
+            try {
+                const response = await fetch(apiUrl);
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                console.log('API Response:', data);
+
+                resultDiv.className = 'success';
+                resultDiv.textContent =
+                    `✅ API Working!\n\n` +
+                    `Found ${data.data.length} cards\n\n` +
+                    `Cards:\n` +
+                    data.data.map(card => `- ${card.name} (${card.set.name})`).join('\n') +
+                    `\n\nFull response:\n${JSON.stringify(data, null, 2)}`;
+
+            } catch (error) {
+                console.error('API Error:', error);
+
+                resultDiv.className = 'error';
+                resultDiv.textContent =
+                    `❌ API Failed\n\n` +
+                    `Error: ${error.message}\n\n` +
+                    `This could be due to:\n` +
+                    `- CORS restrictions\n` +
+                    `- Network issues\n` +
+                    `- API being down\n\n` +
+                    `Check the browser console (F12) for more details.`;
+            }
+        }
+    </script>
+</body>
+</html>

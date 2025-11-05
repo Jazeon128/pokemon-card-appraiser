@@ -5,7 +5,7 @@ import CardDisplay from './components/CardDisplay';
 import CollectionList from './components/CollectionList';
 import { Sparkles } from 'lucide-react';
 
-const POKEMON_TCG_API = 'https://api.pokemontcg.io/v2/cards';
+const POKEMON_API_URL = 'https://api.pokemontcg.io/v2/cards';
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -36,24 +36,57 @@ function App() {
     setError(null);
     setShowCollection(false);
 
+    const queryParams = {
+      q: `name:${searchTerm}*`,
+      pageSize: 12,
+      orderBy: 'name'
+    };
+
+    const apiUrl = `${POKEMON_API_URL}?${new URLSearchParams(queryParams)}`;
+
+    console.log('=== API Request ===');
+    console.log('URL:', apiUrl);
+    console.log('Params:', queryParams);
+
     try {
-      const response = await axios.get(POKEMON_TCG_API, {
-        params: {
-          q: `name:"${searchTerm}"`,
-          orderBy: '-set.releaseDate',
-          pageSize: 12,
-        },
+      const response = await axios.get(POKEMON_API_URL, {
+        params: queryParams
       });
 
-      if (response.data.data.length === 0) {
+      console.log('=== API Response Success ===');
+      console.log('Status:', response.status);
+      console.log('Data:', response.data);
+      console.log('Card count:', response.data.data?.length);
+
+      if (!response.data.data || response.data.data.length === 0) {
         setError(`No cards found matching "${searchTerm}". Try a different search term.`);
         setCards([]);
       } else {
         setCards(response.data.data);
       }
     } catch (err) {
-      console.error('Search error:', err);
-      setError('Failed to fetch cards. Please check your internet connection and try again.');
+      console.error('=== API Error ===');
+      console.error('Error object:', err);
+      console.error('Error message:', err.message);
+      console.error('Error response:', err.response);
+      console.error('Error status:', err.response?.status);
+      console.error('Error data:', err.response?.data);
+      console.error('Error config:', err.config);
+
+      let errorMessage = 'Failed to fetch cards. ';
+
+      if (err.response) {
+        // Server responded with error
+        errorMessage += `Server error (${err.response.status}): ${err.response.data?.message || 'Unknown error'}`;
+      } else if (err.request) {
+        // Request made but no response
+        errorMessage += `Network error: No response from server. Check your internet connection.`;
+      } else {
+        // Something else happened
+        errorMessage += `Error: ${err.message}`;
+      }
+
+      setError(errorMessage);
       setCards([]);
     } finally {
       setIsLoading(false);
