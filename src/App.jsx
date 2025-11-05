@@ -3,7 +3,7 @@ import axios from 'axios';
 import SearchBar from './components/SearchBar';
 import CardDisplay from './components/CardDisplay';
 import CollectionList from './components/CollectionList';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Settings } from 'lucide-react';
 
 // Use our serverless function to avoid CORS issues
 const POKEMON_API_URL = '/api/cards';
@@ -14,6 +14,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showCollection, setShowCollection] = useState(false);
+  const [apiProvider, setApiProvider] = useState('tcg'); // 'tcg' or 'pricetracker'
+  const [showSettings, setShowSettings] = useState(false);
 
   // Load collection from localStorage on mount
   useEffect(() => {
@@ -25,12 +27,23 @@ function App() {
         console.error('Failed to load collection:', e);
       }
     }
+
+    // Load API provider preference
+    const savedProvider = localStorage.getItem('apiProvider');
+    if (savedProvider) {
+      setApiProvider(savedProvider);
+    }
   }, []);
 
   // Save collection to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('pokemonCollection', JSON.stringify(collection));
   }, [collection]);
+
+  // Save API provider preference
+  useEffect(() => {
+    localStorage.setItem('apiProvider', apiProvider);
+  }, [apiProvider]);
 
   const handleSearch = async (searchTerm, filters = {}) => {
     setIsLoading(true);
@@ -40,17 +53,21 @@ function App() {
     const queryParams = {
       search: searchTerm,
       limit: 12,
+      provider: apiProvider, // Add API provider
       includeHistory: filters.includeHistory || false
     };
 
-    // Add optional filters if provided
-    if (filters.minPrice) queryParams.minPrice = filters.minPrice;
-    if (filters.maxPrice) queryParams.maxPrice = filters.maxPrice;
-    if (filters.rarity) queryParams.rarity = filters.rarity;
+    // Add optional filters if provided (only for pricetracker)
+    if (apiProvider === 'pricetracker') {
+      if (filters.minPrice) queryParams.minPrice = filters.minPrice;
+      if (filters.maxPrice) queryParams.maxPrice = filters.maxPrice;
+      if (filters.rarity) queryParams.rarity = filters.rarity;
+    }
 
     const apiUrl = `${POKEMON_API_URL}?${new URLSearchParams(queryParams)}`;
 
     console.log('=== API Request ===');
+    console.log('Provider:', apiProvider);
     console.log('URL:', apiUrl);
     console.log('Params:', queryParams);
     console.log('Filters:', filters);
@@ -135,13 +152,67 @@ function App() {
                 Pokemon Card Appraiser
               </h1>
             </div>
-            <button
-              onClick={() => setShowCollection(!showCollection)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-all hover:shadow-md active:scale-95"
-            >
-              {showCollection ? 'Search Cards' : `My Collection (${collection.length})`}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all active:scale-95"
+                title="Settings"
+              >
+                <Settings size={22} />
+              </button>
+              <button
+                onClick={() => setShowCollection(!showCollection)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-all hover:shadow-md active:scale-95"
+              >
+                {showCollection ? 'Search Cards' : `My Collection (${collection.length})`}
+              </button>
+            </div>
           </div>
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="mt-4 p-4 bg-slate-50 border-2 border-gray-200 rounded-lg">
+              <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <Settings size={18} />
+                API Settings
+              </h3>
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-400 transition-colors bg-white">
+                  <input
+                    type="radio"
+                    name="apiProvider"
+                    value="tcg"
+                    checked={apiProvider === 'tcg'}
+                    onChange={(e) => setApiProvider(e.target.value)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">Pokemon TCG API</div>
+                    <div className="text-sm text-gray-600">Free, unlimited requests, no API key needed</div>
+                    <div className="text-xs text-gray-500 mt-1">⚠️ May be slower during high traffic</div>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer p-3 border-2 border-gray-200 rounded-lg hover:border-blue-400 transition-colors bg-white">
+                  <input
+                    type="radio"
+                    name="apiProvider"
+                    value="pricetracker"
+                    checked={apiProvider === 'pricetracker'}
+                    onChange={(e) => setApiProvider(e.target.value)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">Pokemon Price Tracker API</div>
+                    <div className="text-sm text-gray-600">Faster responses, advanced filters</div>
+                    <div className="text-xs text-gray-500 mt-1">⚠️ Limited to 100 requests/day on free tier</div>
+                  </div>
+                </label>
+              </div>
+              <div className="mt-3 text-xs text-gray-500">
+                💡 Your preference is saved automatically
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -151,7 +222,11 @@ function App() {
           <>
             {/* Search Section */}
             <div className="mb-10">
-              <SearchBar onSearch={handleSearch} isLoading={isLoading} />
+              <SearchBar
+                onSearch={handleSearch}
+                isLoading={isLoading}
+                apiProvider={apiProvider}
+              />
               {error && (
                 <div className="max-w-4xl mx-auto mt-4 p-4 bg-red-50 border-2 border-red-200 text-red-800 rounded-lg text-sm">
                   {error}

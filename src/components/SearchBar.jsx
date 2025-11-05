@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 
-export default function SearchBar({ onSearch, isLoading }) {
+export default function SearchBar({ onSearch, isLoading, apiProvider }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -45,15 +45,17 @@ export default function SearchBar({ onSearch, isLoading }) {
             disabled={isLoading}
           />
         </div>
-        <button
-          type="button"
-          onClick={() => setShowFilters(!showFilters)}
-          className={`px-4 py-3 ${showFilters ? 'bg-blue-500 text-white' : 'bg-white border-2 border-gray-300 text-gray-700'} rounded-lg hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all flex items-center gap-2`}
-          title="Filters"
-        >
-          <SlidersHorizontal size={20} />
-          <span className="hidden sm:inline text-sm font-medium">Filters</span>
-        </button>
+        {apiProvider === 'pricetracker' && (
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-4 py-3 ${showFilters ? 'bg-blue-500 text-white' : 'bg-white border-2 border-gray-300 text-gray-700'} rounded-lg hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all flex items-center gap-2`}
+            title="Filters"
+          >
+            <SlidersHorizontal size={20} />
+            <span className="hidden sm:inline text-sm font-medium">Filters</span>
+          </button>
+        )}
         <button
           type="submit"
           disabled={isLoading || !searchTerm.trim()}
