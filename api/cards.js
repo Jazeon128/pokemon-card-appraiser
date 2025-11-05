@@ -39,11 +39,10 @@ export default async function handler(req, res) {
     console.log('Cache miss for:', search);
     res.setHeader('X-Cache', 'MISS');
 
-    // Build Pokemon TCG API URL
+    // Build Pokemon TCG API URL (simplified to improve performance)
     const apiUrl = new URL('https://api.pokemontcg.io/v2/cards');
     apiUrl.searchParams.set('q', `name:${search}*`);
-    apiUrl.searchParams.set('pageSize', limit);
-    apiUrl.searchParams.set('orderBy', 'name');
+    apiUrl.searchParams.set('pageSize', Math.min(limit, 10)); // Limit to 10 max for speed
 
     console.log('Fetching from:', apiUrl.toString());
 
