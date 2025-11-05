@@ -5,7 +5,8 @@ import CardDisplay from './components/CardDisplay';
 import CollectionList from './components/CollectionList';
 import { Sparkles } from 'lucide-react';
 
-const POKEMON_API_URL = 'https://api.pokemontcg.io/v2/cards';
+// Use our serverless function to avoid CORS issues
+const POKEMON_API_URL = '/api/cards';
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -37,9 +38,8 @@ function App() {
     setShowCollection(false);
 
     const queryParams = {
-      q: `name:${searchTerm}*`,
-      pageSize: 12,
-      orderBy: 'name'
+      search: searchTerm,
+      limit: 12
     };
 
     const apiUrl = `${POKEMON_API_URL}?${new URLSearchParams(queryParams)}`;
