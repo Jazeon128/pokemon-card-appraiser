@@ -5,8 +5,7 @@ import CardDisplay from './components/CardDisplay';
 import CollectionList from './components/CollectionList';
 import { Sparkles } from 'lucide-react';
 
-const POKEMON_API_URL = 'https://www.pokemonpricetracker.com/api/v2/cards';
-const POKEMON_API_KEY = 'pokeprice_free_676abca92fe3786036116f10c15cde25afdd5bfc60feb11a';
+const POKEMON_API_URL = 'https://api.pokemontcg.io/v2/cards';
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -40,14 +39,9 @@ function App() {
     try {
       const response = await axios.get(POKEMON_API_URL, {
         params: {
-          search: searchTerm,
-          limit: 12,
-          includeHistory: true,
-          sortBy: 'name',
-          sortOrder: 'asc'
-        },
-        headers: {
-          'Authorization': `Bearer ${POKEMON_API_KEY}`
+          q: `name:${searchTerm}*`,
+          pageSize: 12,
+          orderBy: 'name'
         }
       });
 
@@ -184,12 +178,12 @@ function App() {
           <p className="text-sm">
             Powered by{' '}
             <a
-              href="https://www.pokemonpricetracker.com/"
+              href="https://pokemontcg.io/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:text-blue-600 font-semibold"
             >
-              Pokemon Price Tracker API
+              Pokemon TCG API
             </a>
           </p>
         </div>

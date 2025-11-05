@@ -21,7 +21,7 @@ A beautiful, fast, and responsive web application for searching Pokemon cards, v
 - **Tailwind CSS** - Utility-first CSS framework
 - **Axios** - HTTP client for API requests
 - **Lucide React** - Beautiful & consistent icons
-- **Pokemon Price Tracker API** - Real card data and pricing with 23,000+ cards
+- **Pokemon TCG API** - Free API with 20,000+ cards and pricing data
 
 ## Quick Start
 
@@ -90,13 +90,13 @@ npm run build
 
 ## API Information
 
-This app uses the [Pokemon Price Tracker API](https://www.pokemonpricetracker.com/) which provides:
-- Comprehensive card data for 23,000+ cards
-- Current market prices with historical data
-- Card images and details
-- PSA pricing data
-- Authenticated with API key (included in the app)
-- Free tier with generous rate limits
+This app uses the free [Pokemon TCG API](https://pokemontcg.io/) which provides:
+- Comprehensive card data for 20,000+ cards
+- Current market prices from TCGPlayer and Cardmarket
+- High-quality card images
+- Card details including sets, rarities, and more
+- No API key required
+- Free with generous rate limits (1,000 requests per hour)
 
 ## Project Structure
 
@@ -156,7 +156,7 @@ MIT License - feel free to use this project for personal or commercial purposes.
 
 ## Acknowledgments
 
-- [Pokemon Price Tracker API](https://www.pokemonpricetracker.com/) for providing comprehensive card data and pricing
+- [Pokemon TCG API](https://pokemontcg.io/) for providing free, comprehensive card data and pricing
 - [Tailwind CSS](https://tailwindcss.com/) for the styling system
 - [Lucide](https://lucide.dev/) for beautiful icons
 - The Pokemon Company for the amazing trading card game
