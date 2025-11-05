@@ -15,9 +15,9 @@ export default function CardDisplay({ cards, onAddToCollection }) {
         <div key={card.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
           {/* Card Image */}
           <div className="bg-gradient-to-br from-blue-100 to-purple-100 p-4 flex justify-center items-center h-80">
-            {card.images?.small ? (
+            {card.imageUrl || card.images?.small ? (
               <img
-                src={card.images.small}
+                src={card.imageUrl || card.images?.small}
                 alt={card.name}
                 className="max-h-full object-contain rounded-lg"
               />
@@ -33,17 +33,41 @@ export default function CardDisplay({ cards, onAddToCollection }) {
           <div className="p-4">
             <h3 className="text-xl font-bold text-gray-800 mb-1">{card.name}</h3>
             <p className="text-sm text-gray-600 mb-3">
-              {card.set?.name} • {card.number}/{card.set?.printedTotal || card.set?.total}
+              {card.setName || card.set?.name}
+              {(card.cardNumber || card.number) && ` • #${card.cardNumber || card.number}`}
               {card.rarity && ` • ${card.rarity}`}
             </p>
 
             {/* Prices */}
-            {card.cardmarket?.prices || card.tcgplayer?.prices ? (
+            {card.prices || card.cardmarket?.prices || card.tcgplayer?.prices ? (
               <div className="bg-gray-50 rounded-lg p-3 mb-3">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp size={16} className="text-green-600" />
                   <span className="font-semibold text-gray-700">Market Prices</span>
                 </div>
+
+                {/* Pokemon Price Tracker Format */}
+                {card.prices && (
+                  <div className="space-y-1 mb-2">
+                    {card.prices.market && (
+                      <PriceRow label="Market Price" price={card.prices.market} />
+                    )}
+                    {card.prices.low && (
+                      <PriceRow label="Low" price={card.prices.low} />
+                    )}
+                    {card.prices.mid && (
+                      <PriceRow label="Mid" price={card.prices.mid} />
+                    )}
+                    {card.prices.high && (
+                      <PriceRow label="High" price={card.prices.high} />
+                    )}
+                    {card.prices.listings && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        {card.prices.listings} active listings
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* TCGPlayer Prices */}
                 {card.tcgplayer?.prices && (

@@ -43,7 +43,7 @@ export default function CollectionList({ collection, onRemoveCard }) {
             >
               {/* Card Image */}
               <img
-                src={card.images?.small || '/placeholder.png'}
+                src={card.imageUrl || card.images?.small || '/placeholder.png'}
                 alt={card.name}
                 className="w-16 h-22 object-contain rounded"
               />
@@ -52,7 +52,7 @@ export default function CollectionList({ collection, onRemoveCard }) {
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-800 truncate">{card.name}</h4>
                 <p className="text-sm text-gray-600 truncate">
-                  {card.set?.name} • {card.number}
+                  {card.setName || card.set?.name} • #{card.cardNumber || card.number}
                 </p>
                 {price ? (
                   <p className="text-sm font-semibold text-green-600 mt-1">
@@ -89,7 +89,15 @@ export default function CollectionList({ collection, onRemoveCard }) {
 
 // Helper function to get the best available price for a card
 function getCardPrice(card) {
-  // Try TCGPlayer prices first
+  // Try Pokemon Price Tracker format first
+  if (card.prices) {
+    if (card.prices.market) return card.prices.market;
+    if (card.prices.mid) return card.prices.mid;
+    if (card.prices.high) return card.prices.high;
+    if (card.prices.low) return card.prices.low;
+  }
+
+  // Try TCGPlayer prices
   if (card.tcgplayer?.prices) {
     const prices = card.tcgplayer.prices;
 
