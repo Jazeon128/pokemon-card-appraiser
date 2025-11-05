@@ -2,7 +2,7 @@
 // Faster and more reliable than Pokemon TCG API
 
 const POKEMON_API_URL = 'https://www.pokemonpricetracker.com/api/v2/cards';
-const POKEMON_API_KEY = 'pokeprice_free_676abca92fe3786036116f10c15cde25afdd5bfc60feb11a';
+const POKEMON_API_KEY = process.env.POKEMON_API_KEY;
 
 const cache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -20,6 +20,14 @@ export default async function handler(req, res) {
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check if API key is configured
+  if (!POKEMON_API_KEY) {
+    return res.status(500).json({
+      error: 'Server configuration error',
+      message: 'POKEMON_API_KEY environment variable is not set'
+    });
   }
 
   try {
