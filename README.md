@@ -1,167 +1,169 @@
-# 🤖 Claude Development Workflow Template
+# Pokemon Card Appraiser 🎴
 
-A systematic, AI-powered development workflow template that enables Claude (and other LLMs) to autonomously plan, develop, test, and deploy features with cost optimization, quality gates, and continuous learning.
+A beautiful, fast, and responsive web application for searching Pokemon cards, viewing current market prices, and tracking your collection value.
 
-## 🎯 Overview
+![Pokemon Card Appraiser](https://img.shields.io/badge/Built%20with-React%20%2B%20Vite-blue)
+![Tailwind CSS](https://img.shields.io/badge/Styled%20with-Tailwind%20CSS-38B2AC)
 
-This template implements the **Plan → Create → Test → Deploy → Reset** methodology with built-in:
-- Cost optimization and monitoring
-- Multi-layer testing strategies  
-- Infrastructure automation via MCP
-- Systematic documentation and context management
-- GitHub-native workflow integration
+## Features
 
-## 🚀 Quick Start
+- **🔍 Search Pokemon Cards** - Find any Pokemon card by name with instant results
+- **💰 Real-time Pricing** - View current market prices from TCGPlayer and Cardmarket
+- **📦 Collection Tracking** - Add cards to your collection and track total value
+- **💾 Persistent Storage** - Your collection is saved locally in your browser
+- **📱 Responsive Design** - Works perfectly on desktop, tablet, and mobile
+- **⚡ Lightning Fast** - Built with Vite for optimal performance
 
-### 1. Create New Project from Template
+## Tech Stack
+
+- **React 18** - Modern React with hooks
+- **Vite** - Next-generation frontend tooling
+- **Tailwind CSS** - Utility-first CSS framework
+- **Axios** - HTTP client for API requests
+- **Lucide React** - Beautiful & consistent icons
+- **Pokemon TCG API** - Real card data and pricing
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 16+ and npm installed on your machine
+
+### Installation
+
 ```bash
-# Create new repository from this template
-gh repo create my-project --template yourusername/claude-dev-workflow-template
+# Clone the repository
+git clone <your-repo-url>
+cd pokemon-card-appraiser
 
-cd my-project
+# Install dependencies
+npm install
 
-# Initialize Claude context
-cp CLAUDE.template.md CLAUDE.md
-# Edit CLAUDE.md with your project specifics
+# Start development server
+npm run dev
 ```
 
-### 2. Configure Project
+The app will be running at `http://localhost:5173`
+
+### Build for Production
+
 ```bash
-# Edit project configuration
-nano .claude/project_config.json
+# Create optimized production build
+npm run build
 
-# Set up GitHub issues templates
-# Edit .github/ISSUE_TEMPLATE/ files for your project type
-
-# Configure CI/CD
-# Edit .github/workflows/ for your stack
+# Preview production build locally
+npm run preview
 ```
 
-### 3. Start Development
+## Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. Install Vercel CLI:
 ```bash
-# Create your first issue
-gh issue create --title "Setup project foundation" --body-file .github/ISSUE_TEMPLATE/feature.md
-
-# Begin Claude workflow
-# Use: /process_issue 1
+npm install -g vercel
 ```
 
-## 📁 Template Structure
-
-```
-├── .github/
-│   ├── workflows/           # CI/CD automation
-│   ├── ISSUE_TEMPLATE/      # Structured issue formats
-│   └── PULL_REQUEST_TEMPLATE.md
-├── .claude/                 # Claude-specific configuration
-│   ├── commands.json        # Custom slash commands
-│   ├── project_config.json  # Project settings
-│   └── templates/           # Code generation templates
-├── scratchpad/              # Planning and context directory
-├── docs/                    # Project documentation
-├── tests/                   # Testing framework
-├── infrastructure/          # IaC and deployment configs
-├── monitoring/              # Observability setup
-├── CLAUDE.template.md       # Claude context template
-├── WORKFLOW_GUIDE.md        # Development methodology
-└── cost-optimization.md     # Cost control strategies
+2. Deploy:
+```bash
+vercel
 ```
 
-## 🔄 Development Workflow
+Or connect your GitHub repository to Vercel for automatic deployments.
 
-### Phase 1: Planning
-1. **Input**: GitHub Issue via `/process_issue {number}`
-2. **Research**: Search scratchpad, GitHub history, documentation
-3. **Planning**: Break down into atomic tasks with cost/risk analysis
-4. **Output**: Detailed plan in `scratchpad/issue-{number}-plan.md`
+### Deploy to Netlify
 
-### Phase 2: Code Creation
-1. **Implementation**: Follow established patterns and cost optimization
-2. **Documentation**: Update CLAUDE.md with new patterns/decisions
-3. **Configuration**: Include infrastructure and deployment configs
-4. **Quality**: Modular, maintainable, well-commented code
+```bash
+# Build the project
+npm run build
 
-### Phase 3: Testing
-1. **Multi-layer Testing**: Unit, integration, cost, security, performance
-2. **Automated Validation**: GitHub Actions for all test types
-3. **Quality Gates**: All tests must pass before deployment
-4. **Documentation**: Update test coverage and strategies
+# Deploy the dist folder to Netlify
+```
 
-### Phase 4: Deployment
-1. **Infrastructure**: Provision via IaC with cost monitoring
-2. **Deployment**: Staged rollout with automated rollback
-3. **Monitoring**: Set up alerts and dashboards
-4. **Validation**: End-to-end testing in production
+## Usage
 
-### Phase 5: Context Reset
-1. **Documentation**: Update CLAUDE.md with learnings
-2. **Cleanup**: Merge successful patterns into templates
-3. **Reset**: Use `/clear_focused` to reset context while preserving essentials
+1. **Search for Cards**: Type a Pokemon name in the search bar (e.g., "Charizard", "Pikachu VMAX")
+2. **View Prices**: Browse through search results to see current market prices
+3. **Add to Collection**: Click "Add to Collection" on any card
+4. **Track Value**: View your collection and total value by clicking "My Collection"
+5. **Manage Collection**: Remove cards from your collection as needed
 
-## 🏗️ Project Types Supported
+## API Information
 
-- **Data Pipelines**: Like our SMB Analytics Platform
-- **Web Applications**: React, Vue, Angular with various backends
-- **APIs**: REST, GraphQL, microservices
-- **Mobile Apps**: React Native, Flutter
-- **Infrastructure**: Terraform, Kubernetes, cloud automation
-- **AI/ML Projects**: Model training, deployment, MLOps
+This app uses the free [Pokemon TCG API](https://pokemontcg.io/) which provides:
+- Comprehensive card data
+- Current market prices
+- Card images and details
+- No API key required for basic usage
+- Rate limit: 100 calls per day (sufficient for personal use)
 
-## 💰 Cost Optimization Features
+## Project Structure
 
-- **Budget Monitoring**: Built-in cost tracking and alerts
-- **Auto-scaling**: Intelligent resource management
-- **Resource Lifecycle**: Automated shutdown and cleanup
-- **Cost Estimation**: Pre-deployment cost analysis
-- **Optimization Patterns**: Proven cost-saving strategies
+```
+pokemon-card-appraiser/
+├── src/
+│   ├── components/
+│   │   ├── SearchBar.jsx       # Search input component
+│   │   ├── CardDisplay.jsx     # Card grid display
+│   │   └── CollectionList.jsx  # Collection tracker
+│   ├── App.jsx                 # Main app component
+│   ├── index.css               # Tailwind imports
+│   └── main.jsx                # React entry point
+├── public/                     # Static assets
+├── index.html                  # HTML template
+├── package.json                # Dependencies
+├── vite.config.js              # Vite configuration
+├── tailwind.config.js          # Tailwind configuration
+└── postcss.config.js           # PostCSS configuration
+```
 
-## 🔧 Customization
+## Features in Detail
 
-### Project-Specific Setup
-1. Edit `.claude/project_config.json` with your stack and requirements
-2. Customize issue templates in `.github/ISSUE_TEMPLATE/`
-3. Configure CI/CD workflows in `.github/workflows/`
-4. Set up cost budgets and monitoring thresholds
-5. Update `CLAUDE.md` with project-specific context
+### Search Functionality
+- Real-time search with loading states
+- Error handling for network issues
+- Results sorted by release date
+- Shows up to 12 cards per search
 
-### Adding New Project Types
-1. Create new issue templates for your project type
-2. Add specific CI/CD workflows
-3. Include relevant cost optimization patterns
-4. Document architecture patterns in the template
+### Price Display
+- TCGPlayer prices (Holofoil, Normal, Reverse Holo, 1st Edition)
+- Cardmarket prices (Average Sell, Trend Price)
+- Automatic currency formatting
+- "No price data" fallback for cards without pricing
 
-## 📊 Success Metrics
+### Collection Management
+- Add cards with duplicate detection
+- Remove cards with confirmation
+- Automatic total value calculation
+- Persistent storage using localStorage
+- Card count display
 
-- **Development Velocity**: Issues to production time
-- **Code Quality**: Test coverage, maintainability scores
-- **Cost Efficiency**: Budget adherence and optimization
-- **Reliability**: Uptime, error rates, performance
-- **Documentation**: Context completeness and accuracy
+## Browser Support
 
-## 🤝 Contributing
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
-1. Fork this template repository
-2. Create improvements to the workflow or templates
-3. Test with real projects
-4. Submit PRs with documented benefits
-5. Share learnings in the community
+## Contributing
 
-## 📚 Documentation
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Workflow Guide](WORKFLOW_GUIDE.md) - Detailed development methodology
-- [Cost Optimization](cost-optimization.md) - Proven cost-saving strategies
-- [Examples](examples/) - Real project implementations
-- [Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
+## License
 
-## 🎯 Philosophy
+MIT License - feel free to use this project for personal or commercial purposes.
 
-This template embodies the principle that **AI-powered development should be**:
-- **Systematic**: Reproducible processes and quality gates
-- **Cost-Conscious**: Optimization built into every decision
-- **Quality-Focused**: Multiple validation layers
-- **Learning-Oriented**: Continuous improvement and pattern capture
-- **Human-Friendly**: Clear documentation and easy maintenance
+## Acknowledgments
+
+- [Pokemon TCG API](https://pokemontcg.io/) for providing comprehensive card data
+- [Tailwind CSS](https://tailwindcss.com/) for the styling system
+- [Lucide](https://lucide.dev/) for beautiful icons
+- The Pokemon Company for the amazing trading card game
+
+## Support
+
+If you encounter any issues or have questions, please open an issue on GitHub.
 
 ---
 
-**Start building better software with AI, faster and more cost-effectively.** 🚀
+Built with ❤️ for Pokemon card collectors
