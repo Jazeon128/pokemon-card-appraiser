@@ -21,13 +21,15 @@ A beautiful, fast, and responsive web application for searching Pokemon cards, v
 - **Tailwind CSS** - Utility-first CSS framework
 - **Axios** - HTTP client for API requests
 - **Lucide React** - Beautiful & consistent icons
-- **Pokemon TCG API** - Free API with 20,000+ cards and pricing data
+- **Pokemon Price Tracker API** - Fast API with real-time pricing data
+- **Vercel Serverless Functions** - API proxy for secure key handling
 
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js 16+ and npm installed on your machine
+- Pokemon Price Tracker API key (get free key at https://www.pokemonpricetracker.com/api)
 
 ### Installation
 
@@ -38,6 +40,10 @@ cd pokemon-card-appraiser
 
 # Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env and add your POKEMON_API_KEY
 
 # Start development server
 npm run dev
@@ -64,12 +70,20 @@ npm run preview
 npm install -g vercel
 ```
 
-2. Deploy:
+2. Set up environment variable in Vercel:
+   - Go to your project settings on Vercel dashboard
+   - Navigate to "Environment Variables"
+   - Add: `POKEMON_API_KEY` with your API key value
+   - Save and redeploy
+
+3. Deploy:
 ```bash
 vercel
 ```
 
 Or connect your GitHub repository to Vercel for automatic deployments.
+
+**Important:** Make sure to add the `POKEMON_API_KEY` environment variable in your Vercel project settings, otherwise the API calls will fail.
 
 ### Deploy to Netlify
 
@@ -90,29 +104,37 @@ npm run build
 
 ## API Information
 
-This app uses the free [Pokemon TCG API](https://pokemontcg.io/) which provides:
+This app uses the [Pokemon Price Tracker API](https://www.pokemonpricetracker.com/api) which provides:
 - Comprehensive card data for 20,000+ cards
-- Current market prices from TCGPlayer and Cardmarket
+- Real-time market prices and price history
 - High-quality card images
 - Card details including sets, rarities, and more
-- No API key required
-- Free with generous rate limits (1,000 requests per hour)
+- Advanced filtering options (price ranges, rarity, sets)
+- Free tier available with API key
+- Fast and reliable responses
+
+**Security Note:** The API key is stored as an environment variable and never exposed in the frontend code.
 
 ## Project Structure
 
 ```
 pokemon-card-appraiser/
+├── api/
+│   └── cards.js                # Vercel serverless function for API proxy
 ├── src/
 │   ├── components/
-│   │   ├── SearchBar.jsx       # Search input component
+│   │   ├── SearchBar.jsx       # Search input with filters
 │   │   ├── CardDisplay.jsx     # Card grid display
 │   │   └── CollectionList.jsx  # Collection tracker
 │   ├── App.jsx                 # Main app component
 │   ├── index.css               # Tailwind imports
 │   └── main.jsx                # React entry point
 ├── public/                     # Static assets
+├── .env.example                # Environment variables template
+├── .env                        # Your local environment variables (not in git)
 ├── index.html                  # HTML template
 ├── package.json                # Dependencies
+├── vercel.json                 # Vercel configuration
 ├── vite.config.js              # Vite configuration
 ├── tailwind.config.js          # Tailwind configuration
 └── postcss.config.js           # PostCSS configuration
@@ -156,7 +178,7 @@ MIT License - feel free to use this project for personal or commercial purposes.
 
 ## Acknowledgments
 
-- [Pokemon TCG API](https://pokemontcg.io/) for providing free, comprehensive card data and pricing
+- [Pokemon Price Tracker API](https://www.pokemonpricetracker.com/api) for providing fast, comprehensive card data and pricing
 - [Tailwind CSS](https://tailwindcss.com/) for the styling system
 - [Lucide](https://lucide.dev/) for beautiful icons
 - The Pokemon Company for the amazing trading card game

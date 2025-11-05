@@ -124,20 +124,20 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-6">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 backdrop-blur-sm bg-white/95">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Sparkles size={32} className="text-blue-500" />
-              <h1 className="text-3xl font-bold text-gray-800">
+            <div className="flex items-center gap-2.5">
+              <Sparkles size={28} className="text-blue-600" />
+              <h1 className="text-2xl font-bold text-gray-900">
                 Pokemon Card Appraiser
               </h1>
             </div>
             <button
               onClick={() => setShowCollection(!showCollection)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-all hover:shadow-md active:scale-95"
             >
               {showCollection ? 'Search Cards' : `My Collection (${collection.length})`}
             </button>
@@ -146,14 +146,14 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {!showCollection ? (
           <>
             {/* Search Section */}
-            <div className="mb-8">
+            <div className="mb-10">
               <SearchBar onSearch={handleSearch} isLoading={isLoading} />
               {error && (
-                <div className="max-w-2xl mx-auto mt-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                <div className="max-w-4xl mx-auto mt-4 p-4 bg-red-50 border-2 border-red-200 text-red-800 rounded-lg text-sm">
                   {error}
                 </div>
               )}
@@ -162,8 +162,8 @@ function App() {
             {/* Results Section */}
             {cards.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Search Results ({cards.length} cards)
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
+                  Found {cards.length} {cards.length === 1 ? 'card' : 'cards'}
                 </h2>
                 <CardDisplay cards={cards} onAddToCollection={handleAddToCollection} />
               </div>
@@ -171,32 +171,32 @@ function App() {
 
             {/* Welcome Message */}
             {cards.length === 0 && !error && !isLoading && (
-              <div className="max-w-3xl mx-auto text-center py-12">
-                <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                  Welcome to Pokemon Card Appraiser! 🎴
+              <div className="max-w-4xl mx-auto text-center py-16">
+                <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                  Welcome to Pokemon Card Appraiser
                 </h2>
-                <p className="text-lg text-gray-600 mb-6">
-                  Search for any Pokemon card to see current market prices and add them to your collection.
+                <p className="text-base text-gray-600 mb-12">
+                  Search for Pokemon cards to see current market prices and build your collection.
                 </p>
-                <div className="grid md:grid-cols-3 gap-6 text-left">
-                  <div className="bg-white p-6 rounded-lg shadow-md">
-                    <div className="text-3xl mb-2">🔍</div>
-                    <h3 className="font-bold text-gray-800 mb-2">Search Cards</h3>
-                    <p className="text-gray-600 text-sm">
+                <div className="grid md:grid-cols-3 gap-5 text-left">
+                  <div className="bg-white p-6 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors">
+                    <div className="text-3xl mb-3">🔍</div>
+                    <h3 className="font-bold text-gray-900 mb-2 text-base">Search Cards</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       Find any Pokemon card by name and see detailed pricing information
                     </p>
                   </div>
-                  <div className="bg-white p-6 rounded-lg shadow-md">
-                    <div className="text-3xl mb-2">💰</div>
-                    <h3 className="font-bold text-gray-800 mb-2">Track Prices</h3>
-                    <p className="text-gray-600 text-sm">
-                      View current market prices from TCGPlayer and Cardmarket
+                  <div className="bg-white p-6 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors">
+                    <div className="text-3xl mb-3">💰</div>
+                    <h3 className="font-bold text-gray-900 mb-2 text-base">Track Prices</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      View real-time market prices and historical trends
                     </p>
                   </div>
-                  <div className="bg-white p-6 rounded-lg shadow-md">
-                    <div className="text-3xl mb-2">📦</div>
-                    <h3 className="font-bold text-gray-800 mb-2">Build Collection</h3>
-                    <p className="text-gray-600 text-sm">
+                  <div className="bg-white p-6 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors">
+                    <div className="text-3xl mb-3">📦</div>
+                    <h3 className="font-bold text-gray-900 mb-2 text-base">Build Collection</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       Add cards to your collection and track total value
                     </p>
                   </div>
@@ -210,15 +210,15 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="container mx-auto px-4 py-6 text-center text-gray-600">
-          <p className="text-sm">
+      <footer className="bg-white border-t border-gray-200 mt-16">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center">
+          <p className="text-sm text-gray-600">
             Powered by{' '}
             <a
               href="https://www.pokemonpricetracker.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
             >
               Pokemon Price Tracker API
             </a>
