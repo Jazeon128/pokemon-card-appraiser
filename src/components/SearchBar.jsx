@@ -32,34 +32,36 @@ export default function SearchBar({ onSearch, isLoading }) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto mb-8">
+    <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto mb-8">
       {/* Search Input */}
-      <div className="relative mb-4">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search for a Pokemon card (e.g., Charizard, Pikachu VMAX)"
-          className="w-full px-6 py-4 pr-32 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-          disabled={isLoading}
-        />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2">
-          <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            className={`p-2 ${showFilters ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-lg hover:bg-blue-600 hover:text-white transition-colors`}
-            title="Toggle filters"
-          >
-            <SlidersHorizontal size={24} />
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading || !searchTerm.trim()}
-            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            <Search size={24} />
-          </button>
+      <div className="flex gap-2 mb-4">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search for a Pokemon card..."
+            className="w-full px-5 py-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            disabled={isLoading}
+          />
         </div>
+        <button
+          type="button"
+          onClick={() => setShowFilters(!showFilters)}
+          className={`px-4 py-3 ${showFilters ? 'bg-blue-500 text-white' : 'bg-white border-2 border-gray-300 text-gray-700'} rounded-lg hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all flex items-center gap-2`}
+          title="Filters"
+        >
+          <SlidersHorizontal size={20} />
+          <span className="hidden sm:inline text-sm font-medium">Filters</span>
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading || !searchTerm.trim()}
+          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2 font-medium"
+        >
+          <Search size={20} />
+          <span className="hidden sm:inline">Search</span>
+        </button>
       </div>
 
       {/* Filters Panel */}
