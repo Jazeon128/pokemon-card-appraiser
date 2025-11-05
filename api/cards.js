@@ -47,9 +47,9 @@ export default async function handler(req, res) {
 
     console.log('Fetching from:', apiUrl.toString());
 
-    // Fetch with shorter timeout
+    // Fetch with timeout (9s to stay under Vercel's 10s limit)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 9000); // 9 second timeout
 
     try {
       const response = await fetch(apiUrl.toString(), {
@@ -99,7 +99,7 @@ export default async function handler(req, res) {
       clearTimeout(timeoutId);
 
       if (fetchError.name === 'AbortError') {
-        console.error('Request timeout after 5s');
+        console.error('Request timeout after 9s');
         return res.status(504).json({
           error: 'The Pokemon API is taking too long to respond. Please try again in a moment.',
           message: 'Request Timeout'
