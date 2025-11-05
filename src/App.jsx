@@ -32,21 +32,28 @@ function App() {
     localStorage.setItem('pokemonCollection', JSON.stringify(collection));
   }, [collection]);
 
-  const handleSearch = async (searchTerm) => {
+  const handleSearch = async (searchTerm, filters = {}) => {
     setIsLoading(true);
     setError(null);
     setShowCollection(false);
 
     const queryParams = {
       search: searchTerm,
-      limit: 12
+      limit: 12,
+      includeHistory: filters.includeHistory || false
     };
+
+    // Add optional filters if provided
+    if (filters.minPrice) queryParams.minPrice = filters.minPrice;
+    if (filters.maxPrice) queryParams.maxPrice = filters.maxPrice;
+    if (filters.rarity) queryParams.rarity = filters.rarity;
 
     const apiUrl = `${POKEMON_API_URL}?${new URLSearchParams(queryParams)}`;
 
     console.log('=== API Request ===');
     console.log('URL:', apiUrl);
     console.log('Params:', queryParams);
+    console.log('Filters:', filters);
 
     try {
       const response = await axios.get(POKEMON_API_URL, {
@@ -59,7 +66,7 @@ function App() {
       console.log('Card count:', response.data.data?.length);
 
       if (!response.data.data || response.data.data.length === 0) {
-        setError(`No cards found matching "${searchTerm}". Try a different search term.`);
+        setError(`No cards found matching "${searchTerm}". Try a different search term or adjust your filters.`);
         setCards([]);
       } else {
         setCards(response.data.data);
@@ -208,12 +215,12 @@ function App() {
           <p className="text-sm">
             Powered by{' '}
             <a
-              href="https://pokemontcg.io/"
+              href="https://www.pokemonpricetracker.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:text-blue-600 font-semibold"
             >
-              Pokemon TCG API
+              Pokemon Price Tracker API
             </a>
           </p>
         </div>
