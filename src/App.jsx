@@ -40,8 +40,7 @@ function App() {
     try {
       const response = await axios.get(POKEMON_API_URL, {
         params: {
-          q: `name:"${searchTerm}"`,
-          orderBy: '-set.releaseDate',
+          name: searchTerm,
           pageSize: 12,
         },
         headers: {
@@ -49,7 +48,9 @@ function App() {
         }
       });
 
-      if (response.data.data.length === 0) {
+      console.log('API Response:', response.data);
+
+      if (!response.data.data || response.data.data.length === 0) {
         setError(`No cards found matching "${searchTerm}". Try a different search term.`);
         setCards([]);
       } else {
@@ -57,7 +58,8 @@ function App() {
       }
     } catch (err) {
       console.error('Search error:', err);
-      setError('Failed to fetch cards. Please check your internet connection and try again.');
+      console.error('Error details:', err.response?.data);
+      setError(`API Error: ${err.response?.data?.message || err.message || 'Failed to fetch cards. Please try again.'}`);
       setCards([]);
     } finally {
       setIsLoading(false);
