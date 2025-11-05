@@ -40,8 +40,11 @@ function App() {
     try {
       const response = await axios.get(POKEMON_API_URL, {
         params: {
-          name: searchTerm,
-          pageSize: 12,
+          search: searchTerm,
+          limit: 12,
+          includeHistory: true,
+          sortBy: 'name',
+          sortOrder: 'asc'
         },
         headers: {
           'Authorization': `Bearer ${POKEMON_API_KEY}`
