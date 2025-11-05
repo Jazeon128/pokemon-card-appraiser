@@ -1,13 +1,16 @@
-// Vercel Serverless Function to proxy Pokemon TCG API requests
-// This avoids CORS issues by making the request from the server
+// Vercel Serverless Function with caching to reduce API calls
+// Simple in-memory cache (resets on cold starts)
+
+const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
 
-  // Handle preflight request
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -23,6 +26,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Search parameter is required' });
     }
 
+    // Check cache
+    const cacheKey = `${search}-${limit}`;
+    const cached = cache.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      console.log('Cache hit for:', search);
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json(cached.data);
+    }
+
+    console.log('Cache miss for:', search);
+    res.setHeader('X-Cache', 'MISS');
+
     // Build Pokemon TCG API URL
     const apiUrl = new URL('https://api.pokemontcg.io/v2/cards');
     apiUrl.searchParams.set('q', `name:${search}*`);
@@ -31,94 +47,67 @@ export default async function handler(req, res) {
 
     console.log('Fetching from:', apiUrl.toString());
 
-    // Fetch from Pokemon TCG API with timeout and retry
+    // Fetch with shorter timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-    let lastError;
-    let attempts = 0;
-    const maxAttempts = 2;
-
-    while (attempts < maxAttempts) {
-      attempts++;
-
-      try {
-        console.log(`Attempt ${attempts}/${maxAttempts}`);
-
-        const response = await fetch(apiUrl.toString(), {
-          signal: controller.signal,
-          headers: {
-            'User-Agent': 'Pokemon-Card-Appraiser/1.0',
-            'Accept': 'application/json'
-          }
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          console.error('API Error:', response.status, response.statusText);
-
-          // If it's a 404, don't retry
-          if (response.status === 404) {
-            return res.status(404).json({
-              error: 'No cards found',
-              data: []
-            });
-          }
-
-          // If it's a server error, retry
-          if (response.status >= 500 && attempts < maxAttempts) {
-            console.log('Server error, retrying...');
-            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms before retry
-            continue;
-          }
-
-          return res.status(response.status).json({
-            error: `Pokemon TCG API error: ${response.statusText}`
-          });
+    try {
+      const response = await fetch(apiUrl.toString(), {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Pokemon-Card-Appraiser/1.0',
+          'Accept': 'application/json'
         }
-
-        const data = await response.json();
-
-        console.log('Success! Found', data.data?.length, 'cards');
-
-        // Return the data
-        return res.status(200).json(data);
-
-      } catch (fetchError) {
-        lastError = fetchError;
-
-        if (fetchError.name === 'AbortError') {
-          console.error('Request timeout');
-          if (attempts < maxAttempts) {
-            console.log('Retrying after timeout...');
-            await new Promise(resolve => setTimeout(resolve, 500));
-            continue;
-          }
-        } else {
-          console.error('Fetch error:', fetchError);
-          if (attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            continue;
-          }
-        }
-      }
-    }
-
-    // All attempts failed
-    clearTimeout(timeoutId);
-
-    if (lastError?.name === 'AbortError') {
-      return res.status(504).json({
-        error: 'Request timeout - Pokemon TCG API is taking too long to respond. Please try again.',
-        message: 'Gateway Timeout'
       });
-    }
 
-    return res.status(500).json({
-      error: 'Failed to fetch cards after multiple attempts',
-      message: lastError?.message || 'Unknown error'
-    });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        console.error('API Error:', response.status, response.statusText);
+
+        if (response.status === 404) {
+          const emptyResult = { data: [], count: 0, totalCount: 0 };
+          // Cache empty results too
+          cache.set(cacheKey, { data: emptyResult, timestamp: Date.now() });
+          return res.status(200).json(emptyResult);
+        }
+
+        return res.status(response.status).json({
+          error: `Pokemon TCG API error: ${response.statusText}`
+        });
+      }
+
+      const data = await response.json();
+
+      console.log('Success! Found', data.data?.length, 'cards');
+
+      // Store in cache
+      cache.set(cacheKey, { data, timestamp: Date.now() });
+
+      // Clean old cache entries (simple cleanup)
+      if (cache.size > 100) {
+        const entries = Array.from(cache.entries());
+        const oldEntries = entries
+          .filter(([_, value]) => Date.now() - value.timestamp > CACHE_TTL)
+          .map(([key]) => key);
+        oldEntries.forEach(key => cache.delete(key));
+      }
+
+      return res.status(200).json(data);
+
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+
+      if (fetchError.name === 'AbortError') {
+        console.error('Request timeout after 5s');
+        return res.status(504).json({
+          error: 'The Pokemon API is taking too long to respond. Please try again in a moment.',
+          message: 'Request Timeout'
+        });
+      }
+
+      throw fetchError;
+    }
 
   } catch (error) {
     console.error('Server error:', error);
