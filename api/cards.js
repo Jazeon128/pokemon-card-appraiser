@@ -74,6 +74,8 @@ export default async function handler(req, res) {
     apiUrl.searchParams.set('sortBy', 'name');
 
     console.log('Fetching from:', apiUrl.toString());
+    console.log('API Key present:', !!POKEMON_API_KEY);
+    console.log('API Key length:', POKEMON_API_KEY?.length || 0);
 
     // Fetch with 8 second timeout
     const controller = new AbortController();
@@ -95,9 +97,27 @@ export default async function handler(req, res) {
         const errorText = await response.text();
         console.error('Error details:', errorText);
 
+        // Handle specific error codes
+        if (response.status === 429) {
+          return res.status(429).json({
+            error: 'Rate limit exceeded',
+            message: 'The API rate limit has been reached. Please wait a moment and try again.',
+            details: errorText.substring(0, 500)
+          });
+        }
+
+        if (response.status === 401 || response.status === 403) {
+          return res.status(response.status).json({
+            error: 'API authentication error',
+            message: 'There is an issue with the API key. Please check your POKEMON_API_KEY environment variable.',
+            details: errorText.substring(0, 500)
+          });
+        }
+
         return res.status(response.status).json({
           error: `Pokemon API error: ${response.statusText}`,
-          details: errorText.substring(0, 200)
+          message: `HTTP ${response.status}`,
+          details: errorText.substring(0, 500)
         });
       }
 
